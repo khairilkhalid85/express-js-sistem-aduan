@@ -1,5 +1,8 @@
 import express from 'express'
-const app = express()
+import aduanRouter from './router/aduan.router.js'
+const app = express();
+
+app.use('/aduan', aduanRouter);
 const port = 3000
 
 app.get('/', (req, res) => {
@@ -19,3 +22,4 @@ app.get('/test-endpoint', (req, res) => {
 app.listen(port, () => {
     console.log(`Example app listening on port ${port}`)
 })
+
