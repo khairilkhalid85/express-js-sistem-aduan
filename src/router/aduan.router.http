@@ -1,0 +1,20 @@
+POST http://localhost:3000/aduan/create
+Content-Type: application/json
+
+{
+    "nama_pengadu": "John Doe",
+    "catatan": "test catatan",
+    "kategori_aduan": "test kategori aduan",
+    "email": "jane.doe@example.com"
+}
+
+###
+
+POST http://localhost:3000/aduan/create
+Content-Type: application/json
+
+{
+     "catatan": "test catatan",
+    "kategori_aduan": "test kategori aduan",
+    "email": "jane.doe@example.com"
+}
