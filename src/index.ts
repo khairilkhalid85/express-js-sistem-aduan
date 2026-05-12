@@ -1,12 +1,24 @@
 import express from 'express'
 import aduanRouter from './router/aduan.router'
+import dotenv from 'dotenv'
+import morgan from 'morgan'
+import logger from './utils/logger';
+
+
+dotenv.config();
 const app = express();
+app.use(
+    morgan('dev', {
+      stream: { write: (message) => logger.info(message.trim()) },
+    })
+  );
 app.use(express.json());
 
 app.use('/aduan', aduanRouter);
 
+const port = process.env.PORT;
+//const port = 3000
 
-const port = 3000
 
 app.get('/', (req, res) => {
     res.send('Hello khai!')

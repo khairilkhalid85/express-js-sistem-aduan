@@ -2,10 +2,10 @@ POST http://localhost:3000/aduan/create
 Content-Type: application/json
 
 {
-    "nama_pengadu": "John Doe",
-    "catatan": "test catatan",
-    "kategori_aduan": "test kategori aduan",
-    "email": "jane.doe@example.com"
+    "nama_pengadu": "John Doe 3",
+    "catatan": "test catatan 3",
+    "kategori_aduan": "test kategori aduan 3",
+    "email": "jane.doe@example.com 3"
 }
 
 ###
@@ -18,3 +18,23 @@ Content-Type: application/json
     "kategori_aduan": "test kategori aduan",
     "email": "jane.doe@example.com"
 }
+###
+
+POST http://localhost:3000/aduan/view
+Content-Type: application/json
+
+{
+    "nama_pengadu": "John Doe 3",
+    "catatan": "test catatan",
+    "kategori_aduan": "test kategori aduan",
+    "email": "jane.doe@example.com"
+}
+
+### 
+PATCH http://localhost:3000/aduan/update/2
+Content-Type: application/json
+
+{
+        "catatan": "test catatan update ke 22222222222222222"
+
+    }
