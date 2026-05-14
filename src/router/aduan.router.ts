@@ -1,24 +1,24 @@
 import { Router } from 'express';
 import db from '../database/db';
 const aduanData = [
-    { id: 1, title: 'Aduan 1', description: 'Description for Aduan 1' },
-    { id: 2, title: 'Aduan 2', description: 'Description for Aduan 2' },
+  { id: 1, title: 'Aduan 1', description: 'Description for Aduan 1' },
+  { id: 2, title: 'Aduan 2', description: 'Description for Aduan 2' },
 ];
 
 const aduanRouter = Router();
 
 const aduans = new Map();
 aduans.set('1', {
-    nama_pengadu: 'John Doe',
-    catatan: 'Catatan aduan 1',
-    kategori_aduan: 'Kategori 1',
-    email: 'john.doe@example.com',
+  nama_pengadu: 'John Doe',
+  catatan: 'Catatan aduan 1',
+  kategori_aduan: 'Kategori 1',
+  email: 'john.doe@example.com',
 });
 aduans.set('2', {
-    nama_pengadu: 'Jane Doe',
-    catatan: 'Catatan aduan 2',
-    kategori_aduan: 'Kategori 2',
-    email: 'jane.doe@example.com',
+  nama_pengadu: 'Jane Doe',
+  catatan: 'Catatan aduan 2',
+  kategori_aduan: 'Kategori 2',
+  email: 'jane.doe@example.com',
 });
 
 // Example route to view aduan
@@ -31,12 +31,15 @@ aduans.set('2', {
 //     });
 // });
 
-aduanRouter.get('/', (req, res) => {
-    res.status(200).json({
-      success: true,
-      data: Array.from(aduans.values()),
-    });
+aduanRouter.get('/', async (req, res) => {
+  // fetch data from database, refer to db
+  const aduanList = await db('aduan').select('*');
+
+  res.status(200).json({
+    success: true,
+    data: aduanList,
   });
+});
 
 // aduanRouter.get('/create', (req, res) => {
 //    // res.send('Hello khai!');
@@ -49,30 +52,30 @@ aduanRouter.get('/', (req, res) => {
 //     })
 // })
 
-aduanRouter.post('/create',async (req, res) => {
-    // body params
-    /**
-     * 1. Nama Pengadu
-     * 2. catatan
-     * 3. categori aduan
-     * 4. email
-     *
-     * // validasi - DONE
-     */
+aduanRouter.post('/create', async (req, res) => {
+  // body params
+  /**
+   * 1. Nama Pengadu
+   * 2. catatan
+   * 3. categori aduan
+   * 4. email
+   *
+   * // validasi - DONE
+   */
 
-    const { nama_pengadu, catatan, kategori_aduan, email } = req.body;
+  const { nama_pengadu, catatan, kategori_aduan, email } = req.body;
 
-    // validation / validasi
-    if (!nama_pengadu || !catatan || !kategori_aduan || !email) {
-        return res.status(400).json({
-            message:
-                'All fields (nama_pengadu, catatan, kategori_aduan, email) are required.',
-        });
-    }
+  // validation / validasi
+  if (!nama_pengadu || !catatan || !kategori_aduan || !email) {
+    return res.status(400).json({
+      message:
+        'All fields (nama_pengadu, catatan, kategori_aduan, email) are required.',
+    });
+  }
 
-    const id = String(Date.now()); // - create a unique id, we are using date, but we will change to uuid
-    const aduan = { nama_pengadu, catatan, kategori_aduan, email };
-    // save to database, refer to db
+  const id = String(Date.now()); // - create a unique id, we are using date, but we will change to uuid
+  const aduan = { nama_pengadu, catatan, kategori_aduan, email };
+  // save to database, refer to db
   // do DTO in here before store to database.
   const saved = await db('aduan').insert({
     id: id,
@@ -84,55 +87,71 @@ aduanRouter.post('/create',async (req, res) => {
   if (!saved) {
     return res.status(500).json({ message: 'Failed to save aduan.' });
   }
-   // aduans.set(id, aduan); // -- add new record
+  // aduans.set(id, aduan); // -- add new record
 
-    return res
-        .status(201)
-        .json({ message: 'Aduan created.', data: { id: id, ...aduan } });
+  return res
+    .status(201)
+    .json({ message: 'Aduan created.', data: { id: id, ...aduan } });
 });
 
 aduanRouter.get('/view/:id', (req, res) => {
-    const aduanId = req.params.id;
-  
-    if (!aduanId) {
-      return res.status(400).json({ message: 'Invalid aduanId.' });
-    }
-  
-    const aduan = aduans.get(aduanId);
-  
-    if (!aduan) {
-      return res.status(404).json({ message: 'Aduan not found.' });
-    }
-  
-    return res.json({ data: aduan });
-  });
+  const aduanId = req.params.id;
+
+  if (!aduanId) {
+    return res.status(400).json({ message: 'Invalid aduanId.' });
+  }
+
+  const aduan = aduans.get(aduanId);
+
+  if (!aduan) {
+    return res.status(404).json({ message: 'Aduan not found.' });
+  }
+
+  return res.json({ data: aduan });
+});
 
 
-  aduanRouter.patch('/update/:id', (req, res) => {
-    const aduanId = req.params.id;
-  
-    if (!aduanId) {
-      return res.status(400).json({ message: 'Invalid aduanId.' }); // this is to check false, undefeined, null, empty string, etc
-    }
-  
-    const existing = aduans.get(aduanId);
-  
-    if (!existing) {
-      return res.status(404).json({ message: 'Aduan not found.' });
-    }
-  
-    const { nama_pengadu, catatan, kategori_aduan, email } = req.body;
-  
-    const updated  ={
-      ...existing, // spread operator to copy existing properties
-      nama_pengadu: nama_pengadu || existing.nama_pengadu, // ternary operator to check if new value is provided, if not use existing value
-      catatan: catatan || existing.catatan,
-      kategori_aduan: kategori_aduan || existing.kategori_aduan,
-      email: email || existing.email,
-    };
-  
-    aduans.set(aduanId, updated);
-    return res.json({ message: 'Aduan updated.', data: updated });
-  });
+aduanRouter.patch('/update/:id', (req, res) => {
+  const aduanId = req.params.id;
+
+  if (!aduanId) {
+    return res.status(400).json({ message: 'Invalid aduanId.' }); // this is to check false, undefeined, null, empty string, etc
+  }
+
+  const existing = aduans.get(aduanId);
+
+  if (!existing) {
+    return res.status(404).json({ message: 'Aduan not found.' });
+  }
+
+  const { nama_pengadu, catatan, kategori_aduan, email } = req.body;
+
+  const updated = {
+    ...existing, // spread operator to copy existing properties
+    nama_pengadu: nama_pengadu || existing.nama_pengadu, // ternary operator to check if new value is provided, if not use existing value
+    catatan: catatan || existing.catatan,
+    kategori_aduan: kategori_aduan || existing.kategori_aduan,
+    email: email || existing.email,
+  };
+
+  aduans.set(aduanId, updated);
+  return res.json({ message: 'Aduan updated.', data: updated });
+});
+
+
+aduanRouter.delete('/delete/:id', async (req, res) => {
+  const id = req.params.id;
+  if (!id) {
+    return res.status(400).json({ message: 'Invalid id parameter.' });
+  }
+  const exists = await db('aduan').where({ id }).first();
+
+  if (!exists) {
+    return res.status(404).json({ message: 'Aduan not found.' });
+  }
+
+  await db('aduan').where({ id }).del();
+  return res.json({ message: 'Aduan deleted.' });
+});
 
 export default aduanRouter
