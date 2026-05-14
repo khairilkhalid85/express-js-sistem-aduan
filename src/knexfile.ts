@@ -6,11 +6,17 @@ const config: { [key: string]: Knex.Config } = {
   development: {
     client: 'mysql2',
     connection: {
-      host: process.env.DB_HOST||'wrong_localhost',
-      port: process.env.DB_PORT ? parseInt(process.env.DB_PORT) : 3308,
-      user: process.env.DB_USER||'root',
-      password: process.env.DB_PASSWORD||'wrong_password',
-      database: process.env.DB_NAME||'wrong_database',
+      // host: process.env.DB_HOST||'wrong_localhost',
+      // port: process.env.DB_PORT ? parseInt(process.env.DB_PORT) : 3308,
+      // user: process.env.DB_USER||'root',
+      // password: process.env.DB_PASSWORD||'wrong_password',
+      // database: process.env.DB_NAME||'wrong_database',
+
+      host: 'localhost',
+      port:  3306,
+      user: 'aduan',
+      password: '12345',
+      database: 'bomba_aduan'
     },
     migrations: {
       extension: 'ts', // Forces knex to look for .ts files

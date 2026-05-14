@@ -1,4 +1,5 @@
 import { Router } from 'express';
+import db from '../database/db';
 const aduanData = [
     { id: 1, title: 'Aduan 1', description: 'Description for Aduan 1' },
     { id: 2, title: 'Aduan 2', description: 'Description for Aduan 2' },
@@ -48,7 +49,7 @@ aduanRouter.get('/', (req, res) => {
 //     })
 // })
 
-aduanRouter.post('/create', (req, res) => {
+aduanRouter.post('/create',async (req, res) => {
     // body params
     /**
      * 1. Nama Pengadu
@@ -71,7 +72,19 @@ aduanRouter.post('/create', (req, res) => {
 
     const id = String(Date.now()); // - create a unique id, we are using date, but we will change to uuid
     const aduan = { nama_pengadu, catatan, kategori_aduan, email };
-    aduans.set(id, aduan); // -- add new record
+    // save to database, refer to db
+  // do DTO in here before store to database.
+  const saved = await db('aduan').insert({
+    id: id,
+    nama_pengadu: nama_pengadu,
+    catatan: catatan,
+    kategori_aduan,
+    emel: email,
+  });
+  if (!saved) {
+    return res.status(500).json({ message: 'Failed to save aduan.' });
+  }
+   // aduans.set(id, aduan); // -- add new record
 
     return res
         .status(201)
